@@ -2,14 +2,14 @@ import React , { useMemo, useEffect } from 'react'
 import io from "socket.io-client";
 import { Button, Box, Typography, CircularProgress } from '@mui/material';
 import { useDispatch, } from 'react-redux';
-import { setForexData, setForexSocket, } from '../../app/utils/forex';
-import { setCryptoData, setCryptoSocket, } from '../../app/utils/crypto';
-import { setCryptoCurrencySocket, setCryptoCurrencyData} from '../../app/utils/cryptoCurrney';
+import { setForexData, setForexSocket, } from '../../../app/utils/forex';
+import { setCryptoData, setCryptoSocket, } from '../../../app/utils/crypto';
+import { setCryptoCurrencySocket, setCryptoCurrencyData} from '../../../app/utils/cryptoCurrney';
 import ReactTable from './ReactTable';
 const  Prices = ( { info, apiKey, id, url, name } )=>{
     const dispatch=useDispatch()
     const columns = useMemo( ()=>sample_columns,[])
-    const temp = info.sample
+    const temp = useMemo( ()=>info.sample,[info.sample])
 
     const  connectionHandler=()=>{
       setSocketData(name,{...info.data,status:'loading',message:'Loading...'})
@@ -41,7 +41,6 @@ const  Prices = ( { info, apiKey, id, url, name } )=>{
 
    
     const  disconnectHandler=()=>{
-        console.log('ws', info.socket)
         info.socket.off('connect');
         info.socket.off('disconnect');
         info.socket.off('pong');
@@ -52,11 +51,10 @@ const  Prices = ( { info, apiKey, id, url, name } )=>{
 
     
     useEffect(() => {
-      console.log(info)
           const ws= info.socket
           if(ws === null ) return;
           ws.on('successfully',(e)=>{
-              console.log('successfully:',e)
+             console.log('successfully:',e)
               setSocketData(name,{payload:temp,status:'success',message:`Connect to ${name} successfully at ` + new Date().toLocaleString()})
           });
           // any log message from server will received here.

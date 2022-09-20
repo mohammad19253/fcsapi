@@ -1,17 +1,7 @@
 import { configureStore , combineReducers, getDefaultMiddleware   } from '@reduxjs/toolkit'
-import CryptoReducer from './utils/crypto';
-import ForexReducer from './utils/forex'
-import CryptoCurrencyReducer from './utils/cryptoCurrney';
-
-
-// import storage from 'redux-persist/lib/storage' 
-// import { persistReducer,} from 'redux-persist'
-// const persistConfig = {
-//   key: 'root',
-//   storage,
-// };
-// const persistedReducer = persistReducer(persistConfig, reducers);
-
+import CryptoReducer from '../utils/crypto';
+import ForexReducer from '../utils/forex'
+import CryptoCurrencyReducer from '../utils/cryptoCurrney';
 const reducers = combineReducers({
   forex: ForexReducer,
   crypto:CryptoReducer,
