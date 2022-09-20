@@ -1,4 +1,4 @@
-import React , { useMemo, useEffect } from 'react'
+import React , { useMemo, useEffect, useCallback } from 'react'
 import io from "socket.io-client";
 import { Button, Box, Typography, CircularProgress } from '@mui/material';
 import { useDispatch, } from 'react-redux';
@@ -28,14 +28,14 @@ const  Prices = ( { info, apiKey, id, url, name } )=>{
         default : return 0;
       }
     } 
-    const setSocketData=(value,data)=>{
+    const setSocketData= useCallback((value,data)=>{
       switch(value){
         case 'Forex': dispatch(setForexData(data)); break;
         case 'Crypto Currency': dispatch(setCryptoCurrencyData(data)); break;
         case 'Crypto': dispatch(setCryptoData(data)); break;
         default : return 0;
       }
-    } 
+    } , [dispatch] )
 
    
     const  disconnectHandler=()=>{
@@ -48,13 +48,11 @@ const  Prices = ( { info, apiKey, id, url, name } )=>{
     useEffect(() => {
           const ws = info.socket
           if( ws !== null ){
-            console.log('inja',info.socket)
             ws.on('successfully',(e)=>{
-              console.log('successfully:',e)
+              // console.log('successfully:',e)
               setSocketData(name,{payload:info.data.payload,status:'success',message:`Connect to ${name} successfully at ` + new Date().toLocaleString()})
             });
-            // any log message from server will received here.
-            ws.on('message',(message)=>{ console.log( "FCS SOCKET: " + message) });
+           
             // connect error
             ws.on('connect_error',function(e){ 
               console.log('connection error:',e)
@@ -94,7 +92,7 @@ const  Prices = ( { info, apiKey, id, url, name } )=>{
   
             });
   
-            console.log('/n next socket')
+         
             // ws.on("connect", () => {console.log('connect'); });
             ws.on("disconnect", (e) => {
               setSocketData(name,{payload:[],status:'disconnect',message:'Ops! something went wrong'})
