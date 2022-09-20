@@ -6,6 +6,7 @@ export const CryptoReducer = createSlice({
       data:{payload:[],status:'disconnect',message:`Start connection to crypto `},
       sample :[
         {
+            id:'10',
           Name: 'LTC',
           LastClose: 'waiting',
           Current: 'waiting',
@@ -20,6 +21,7 @@ export const CryptoReducer = createSlice({
           Time: 'waiting',
         },
         {
+          id:'50',
           Name: 'XRP',
           LastClose: 'waiting',
           Current: 'waiting',

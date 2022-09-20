@@ -64,9 +64,11 @@ import { FaSort, FaSortUp, FaSortDown, } from "react-icons/fa";
                 row.cells.map(cell => {
                     // Apply the cell props
                     return (
-                    <TableCell  align="center" {...cell.getCellProps()}>
+                    <TableCell sx={{color:cell.value[0] === '+' ? 'green' : cell.value[0] === '-' ? 'red' : 'inherit'}}  align="center" {...cell.getCellProps()}>
                         {// Render the cell contents
-                        cell.render('Cell')}
+                        cell.render('Cell')
+                        }
+                       
                         
                     </TableCell>
                     )
