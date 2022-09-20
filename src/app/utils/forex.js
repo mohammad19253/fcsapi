@@ -4,36 +4,7 @@ export const ForexReducer = createSlice({
   initialState: {
       socket:null,
       data:{payload:[],status:'disconnect',message:`Start connection to forex `},
-      sample:[
-        {
-          Name: 'EUR-USD',
-          LastClose: 'waiting',
-          Current: 'waiting',
-          Ask: 'waiting',
-          Bid: 'waiting',
-          High: 'waiting',
-          Low: 'waiting',
-          Change: 'waiting',
-          Change_: 'waiting',
-          Spread: 'waiting',
-          Volume: 'waiting',
-          Time: 'waiting',
-        },
-        {
-          Name: 'XAU-USD',
-          LastClose: 'waiting',
-          Current: 'waiting',
-          Ask: 'waiting',
-          Bid: 'waiting',
-          High: 'waiting',
-          Low: 'waiting',
-          Change: 'waiting',
-          Change_: 'waiting',
-          Spread: 'waiting',
-          Volume: 'waiting',
-          Time: 'waiting',
-        },
-      ]
+     
   },
   reducers: {
     setForexData: (state, action) => {

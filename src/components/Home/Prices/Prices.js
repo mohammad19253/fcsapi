@@ -18,7 +18,6 @@ const  Prices = ( { info, apiKey, id, url, name } )=>{
       });
       socket.emit('heartbeat', apiKey);
       socket.emit('real_time_join', id); 
- 
       setSocket(name,socket)
     }
     const setSocket=(value,socket)=>{
@@ -40,71 +39,70 @@ const  Prices = ( { info, apiKey, id, url, name } )=>{
 
    
     const  disconnectHandler=()=>{
-        console.log('disconnect')
-        info.socket.off('connect');
-        info.socket.off('disconnect');
-        info.socket.off('pong');
+        info.socket.disconnect()
         setSocket(name,null)
         setSocketData(name,{payload:[],status:'disconnect',message:'Disconnect successfully at ' + new Date().toLocaleString()})
     }
     
-
     
     useEffect(() => {
-          const ws= info.socket
-          if(ws === null ) return;
-          ws.on('successfully',(e)=>{
-            console.log('successfully:',e)
-            setSocketData(name,{payload:info.data.payload,status:'success',message:`Connect to ${name} successfully at ` + new Date().toLocaleString()})
-        });
-          // any log message from server will received here.
-          ws.on('message',(message)=>{ console.log( "FCS SOCKET: " + message) });
-          // connect error
-          ws.on('connect_error',function(e){ 
-            console.log('connection error:',e)
-            setSocketData(name,{payload:[],status:'disconnect',message:'Disconnect: ' + e + ' try again '})
-         });
-
-          // receive data
-          ws.on('data_received',function(data){ 
-            console.log('data:',data) 
-            let updatedPayload = info.data.payload.filter(item=>{
-              return item.Name !== data.s
+          const ws = info.socket
+          if( ws !== null ){
+            console.log('inja',info.socket)
+            ws.on('successfully',(e)=>{
+              console.log('successfully:',e)
+              setSocketData(name,{payload:info.data.payload,status:'success',message:`Connect to ${name} successfully at ` + new Date().toLocaleString()})
+            });
+            // any log message from server will received here.
+            ws.on('message',(message)=>{ console.log( "FCS SOCKET: " + message) });
+            // connect error
+            ws.on('connect_error',function(e){ 
+              console.log('connection error:',e)
+              setSocketData(name,{payload:[],status:'disconnect',message:'Disconnect: ' + e + ' try again '})
+            });
+  
+            // receive data
+            ws.on('data_received',function(data){ 
+              let updatedPayload = info.data.payload.filter(item=>{
+                return item.Name !== data.s
+              })
+              updatedPayload.push(
+                {
+                  id:data.id,
+                  Name:data.s,
+                  LastClose:data.lc,
+                  Current: data.c,
+                  Ask: data.a,
+                  Bid:data.b,
+                  High: data.h,
+                  Low: data.l,
+                  Change: data.ch,
+                  Change_: data.cp,
+                  Spread:data.sp,
+                  Volume: data.dp,
+                  Time: new Date(data.t).toLocaleString(),
+                }
+              )
+              updatedPayload.sort(((a,b)=>{
+                return a.Name.localeCompare(b.Name)
+              }));
+              setSocketData(name,{
+              payload:updatedPayload,
+              status:'success',
+              message:`Connect to ${name} successfully at ` + new Date().toLocaleString()
             })
-            updatedPayload.push(
-              {
-                id:data.id,
-                Name:data.s,
-                LastClose:data.lc,
-                Current: data.c,
-                Ask: data.a,
-                Bid:data.b,
-                High: data.h,
-                Low: data.l,
-                Change: data.ch,
-                Change_: data.cp,
-                Spread:data.sp,
-                Volume: data.dp,
-                Time: new Date(data.t).toLocaleString(),
-              }
-            )
-            updatedPayload.sort(((a,b)=>{
-              return a.Name.localeCompare(b.Name)
-            }));
-            setSocketData(name,{
-            payload:updatedPayload,
-            status:'success',
-            message:`Connect to ${name} successfully at ` + new Date().toLocaleString()
-          })
+  
+            });
+  
+            console.log('/n next socket')
+            // ws.on("connect", () => {console.log('connect'); });
+            ws.on("disconnect", (e) => {
+              setSocketData(name,{payload:[],status:'disconnect',message:'Ops! something went wrong'})
+            }); 
+          }
+         
 
-          });
-
-          console.log('/n next socket')
-          // ws.on("connect", () => {console.log('connect'); });
-          ws.on("disconnect", (e) => {
-            setSocketData(name,{payload:[],status:'disconnect',message:'Ops! something went wrong'})
-          });   
-    }, [info]);
+    }, [info,name,setSocketData]);
     
 
     return (
