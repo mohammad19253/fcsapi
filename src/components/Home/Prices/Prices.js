@@ -9,8 +9,7 @@ import ReactTable from './ReactTable';
 const  Prices = ( { info, apiKey, id, url, name } )=>{
     const dispatch=useDispatch()
     const columns = useMemo( ()=>sample_columns,[])
-    const temp = useMemo( ()=>info.sample,[info.sample])
-
+ 
     const  connectionHandler=()=>{
       setSocketData(name,{...info.data,status:'loading',message:'Loading...'})
       const socket = io(url,{
@@ -20,50 +19,6 @@ const  Prices = ( { info, apiKey, id, url, name } )=>{
       socket.emit('heartbeat', apiKey);
       socket.emit('real_time_join', id); 
  
-      
-        // socket.emit({
-        //   "type": "hello",
-        //   "apikey": "DC4FDA31-A0DB-405E-A40F-A9E8ABDB5BB9",
-        //   "heartbeat": false,
-        //   "subscribe_data_type": ["trade"],
-        //   "subscribe_filter_symbol_id": [
-        //     "BITSTAMP_SPOT_BTC_USD$",
-        //     "BITFINEX_SPOT_BTC_LTC$",
-        //     "COINBASE_",
-        //     "ITBIT_"
-        //     ]
-        // })
-        // socket.send({
-        //   "type": "book",
-        //   "symbol_id": "BITSTAMP_SPOT_BTC_USD",
-        //   "sequence": 2323346,
-        //   "time_exchange": "2013-09-28T22:40:50.0000000Z",
-        //   "time_coinapi": "2017-03-18T22:42:21.3763342Z",
-        //   "is_snapshot": true,
-        //   "asks": [
-        //     {
-        //       "price": 456.35,
-        //       "size": 123
-        //     },
-        //     {
-        //       "price": 456.36,
-        //       "size": 23
-        //     },
-        //   ],
-        //   "bids": [
-        //     {
-        //       "price": 456.10,
-        //       "size": 42
-        //     },
-        //     {
-        //       "price": 456.09,
-        //       "size": 5
-        //     },
-        //   ]
-        // }
-        // )
-     
-      // Connect Ids on server 
       setSocket(name,socket)
     }
     const setSocket=(value,socket)=>{
@@ -85,6 +40,7 @@ const  Prices = ( { info, apiKey, id, url, name } )=>{
 
    
     const  disconnectHandler=()=>{
+        console.log('disconnect')
         info.socket.off('connect');
         info.socket.off('disconnect');
         info.socket.off('pong');
@@ -97,7 +53,10 @@ const  Prices = ( { info, apiKey, id, url, name } )=>{
     useEffect(() => {
           const ws= info.socket
           if(ws === null ) return;
-          
+          ws.on('successfully',(e)=>{
+            console.log('successfully:',e)
+            setSocketData(name,{payload:info.data.payload,status:'success',message:`Connect to ${name} successfully at ` + new Date().toLocaleString()})
+        });
           // any log message from server will received here.
           ws.on('message',(message)=>{ console.log( "FCS SOCKET: " + message) });
           // connect error
@@ -156,8 +115,8 @@ const  Prices = ( { info, apiKey, id, url, name } )=>{
           <Button variant='contained' sx={{m:1}} onClick={()=>{ connectionHandler() }} disabled={ info.data.status === 'success'}> 
              { info.data.status === 'loading' ?  <CircularProgress color="inherit" size={25}/> : 'Start Connection' }
           </Button>
-          <Button variant='contained' sx={{m:1}} onClick={()=>{ disconnectHandler() }} disabled={ info.data.status !== 'success'}  >
-             { info.data.status === 'loading' ?  <CircularProgress color="inherit" size={25}/> : 'Disconnect' }
+          <Button variant='contained' sx={{m:1}} onClick={()=>{ disconnectHandler() }} disabled={ info.data.status === 'disconnect'}  >
+            Disconnect
           </Button>
         </Box>
       </>
